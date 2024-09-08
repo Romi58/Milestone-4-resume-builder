@@ -1,57 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interactive Resume Builder</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Resume Builder with PDF Download</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="jsPDF.min.js"></script> <!-- Include jsPDF Library -->
 </head>
 <body>
-  <div class="container">
-    <form id="resumeForm">
-      <h2>Resume Builder</h2>
+    <div id="form-container" class="animated fadeIn">
+        <h2>Resume Builder</h2>
+        <form id="resumeForm">
+            <label for="name">Full Name:</label>
+            <input type="text" id="name" required><br>
 
-      <label for="name">Name</label>
-      <input type="text" id="name" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" required><br>
 
-      <label for="title">Title</label>
-      <input type="text" id="title" required>
+            <label for="education">Education:</label>
+            <input type="text" id="education" required><br>
 
-      <label for="email">Email</label>
-      <input type="email" id="email" required>
+            <label for="skills">Skills (comma separated):</label>
+            <input type="text" id="skills" required><br>
 
-      <label for="phone">Phone</label>
-      <input type="text" id="phone" required>
+            <!-- New Fields -->
+            <label for="experience">Work Experience:</label>
+            <textarea id="experience" rows="4" required></textarea><br>
 
-      <label for="github">GitHub</label>
-      <input type="url" id="github" required>
+            <label for="projects">Projects (comma separated):</label>
+            <textarea id="projects" rows="4" required></textarea><br>
 
-      <label for="portfolio">Portfolio</label>
-      <input type="url" id="portfolio" required>
+            <label for="achievements">Achievements (comma separated):</label>
+            <textarea id="achievements" rows="4" required></textarea><br>
 
-      <label for="education">Education</label>
-      <input type="text" id="education" required>
+            <button type="button" id="generateResumeBtn">Generate Resume</button>
+        </form>
+    </div>
 
-      <label for="currentYear">Current Year</label>
-      <input type="text" id="currentYear" required>
+    <div id="resume-container" class="animated fadeIn">
+        <h2>Generated Resume</h2>
+        <div id="resumeOutput"></div>
+        <button id="downloadPdfBtn">Download as PDF</button>
+        <button id="resetBtn">Reset</button>
+    </div>
 
-      <label for="skills">Skills (comma separated)</label>
-      <input type="text" id="skills" required>
-
-      <label for="projects">Projects (comma separated)</label>
-      <input type="text" id="projects" required>
-
-      <label for="achievements">Achievements (comma separated)</label>
-      <input type="text" id="achievements" required>
-
-      <button type="submit">Generate Resume</button>
-      <button type="button" id="downloadBtn">Download as PDF</button>
-    </form>
-
-    <div id="resumeContainer"></div>
-  </div>
-
-  <script src="main.ts" type="module"></script>
+    <script src="app.js" defer></script>
 </body>
 </html>

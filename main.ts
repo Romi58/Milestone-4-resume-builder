@@ -1,66 +1,73 @@
-const resumeForm = document.getElementById("resumeForm") as HTMLFormElement;
-const resumeContainer = document.getElementById("resumeContainer") as HTMLDivElement;
-const downloadBtn = document.getElementById("downloadBtn") as HTMLButtonElement;
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
-resumeForm.addEventListener("submit", (e) => {
-  e.preventDefault();
+document.addEventListener('DOMContentLoaded', () => {
+    const generateResumeBtn = document.getElementById('generateResumeBtn') as HTMLButtonElement;
+    const resetBtn = document.getElementById('resetBtn') as HTMLButtonElement;
+    const downloadPdfBtn = document.getElementById('downloadPdfBtn') as HTMLButtonElement;
 
-  const name = (document.getElementById("name") as HTMLInputElement).value;
-  const title = (document.getElementById("title") as HTMLInputElement).value;
-  const email = (document.getElementById("email") as HTMLInputElement).value;
-  const phone = (document.getElementById("phone") as HTMLInputElement).value;
-  const github = (document.getElementById("github") as HTMLInputElement).value;
-  const portfolio = (document.getElementById("portfolio") as HTMLInputElement).value;
-  const education = (document.getElementById("education") as HTMLInputElement).value;
-  const currentYear = (document.getElementById("currentYear") as HTMLInputElement).value;
-  const skills = (document.getElementById("skills") as HTMLInputElement).value.split(",");
-  const projects = (document.getElementById("projects") as HTMLInputElement).value.split(",");
-  const achievements = (document.getElementById("achievements") as HTMLInputElement).value.split(",");
+    generateResumeBtn.addEventListener('click', generateResume);
+    resetBtn.addEventListener('click', resetForm);
+    downloadPdfBtn.addEventListener('click', downloadResumeAsPDF);
 
-  resumeContainer.innerHTML = `
-    <h2 class="resume-header">${name}</h2>
-    <p class="resume-subtitle">${title}</p>
-    
-    <div class="contact-info">
-      <a href="${github}">GitHub</a> |
-      <a href="mailto:${email}">${email}</a> |
-      <a href="tel:${phone}">${phone}</a> |
-      <a href="${portfolio}">View Portfolio</a>
-    </div>
+    function generateResume() {
+        const name = (document.getElementById('name') as HTMLInputElement).value;
+        const email = (document.getElementById('email') as HTMLInputElement).value;
+        const education = (document.getElementById('education') as HTMLInputElement).value;
+        const skills = (document.getElementById('skills') as HTMLInputElement).value.split(',');
+        const experience = (document.getElementById('experience') as HTMLTextAreaElement).value;
+        const projects = (document.getElementById('projects') as HTMLTextAreaElement).value.split(',');
+        const achievements = (document.getElementById('achievements') as HTMLTextAreaElement).value.split(',');
 
-    <div class="section">
-      <h3>Education</h3>
-      <p>${education}</p>
-      <p><strong>Currently:</strong> ${currentYear}</p>
-    </div>
+        if (name && email && education && skills.length > 0) {
+            const resumeOutput = document.getElementById('resumeOutput') as HTMLDivElement;
+            resumeOutput.innerHTML = `
+                <div contenteditable="true" class="resume-section" data-section="name">${name}</div>
+                <div contenteditable="true" class="resume-section" data-section="email">${email}</div>
+                <div contenteditable="true" class="resume-section" data-section="education">${education}</div>
+                <div contenteditable="true" class="resume-section" data-section="skills">${skills.join(', ')}</div>
+                <div contenteditable="true" class="resume-section" data-section="experience">${experience}</div>
+                <div contenteditable="true" class="resume-section" data-section="projects">${projects.join(', ')}</div>
+                <div contenteditable="true" class="resume-section" data-section="achievements">${achievements.join(', ')}</div>
+            `;
+            makeEditable();
+        } else {
+            alert('Please fill in all fields.');
+        }
+    }
 
-    <div class="section">
-      <h3>Skills</h3>
-      <ul>
-        ${skills.map(skill => `<li>${skill.trim()}</li>`).join('')}
-      </ul>
-    </div>
+    function resetForm() {
+        (document.getElementById('resumeForm') as HTMLFormElement).reset();
+        const resumeOutput = document.getElementById('resumeOutput') as HTMLDivElement;
+        resumeOutput.innerHTML = '';
+    }
 
-    <div class="section">
-      <h3>Projects</h3>
-      <ol>
-        ${projects.map(project => `<li>${project.trim()}</li>`).join('')}
-      </ol>
-    </div>
+    function downloadResumeAsPDF() {
+        const resumeContent = document.getElementById('resumeOutput');
+        if (resumeContent) {
+            html2canvas(resumeContent).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const doc = new jsPDF();
+                doc.addImage(imgData, 'PNG', 10, 10);
+                doc.save('resume.pdf');
+            });
+        } else {
+            alert('Please generate a resume first.');
+        }
+    }
 
-    <div class="section">
-      <h3>Achievements</h3>
-      <ol>
-        ${achievements.map(achievement => `<li>${achievement.trim()}</li>`).join('')}
-      </ol>
-    </div>
-  `;
+    function makeEditable() {
+        const sections = document.querySelectorAll('.resume-section');
+        sections.forEach(section => {
+            section.addEventListener('input', (event) => {
+                const target = event.target as HTMLDivElement;
+                const sectionType = target.dataset.section;
+                if (sectionType) {
+                    console.log(`Updated ${sectionType}: ${target.innerText}`);
+                    // Optionally save the changes or update other parts of the application
+                }
+            });
+        });
+    }
 });
 
-// Download as PDF functionality
-downloadBtn.addEventListener("click", () => {
-  const element = document.getElementById('resumeContainer');
-  if (element) {
-    html2pdf().from(element).save();
-  }
-});
